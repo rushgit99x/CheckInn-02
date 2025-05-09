@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - CheckInn</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">CheckInn Staff</a>
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h2>Welcome, {{ user_type }}!</h2>
+        {% if user_type == 'Clerk' %}
+            <p>Perform check-in, check-out, or manage reservations.</p>
+        {% elif user_type == 'Manager' %}
+            <p>View occupancy and financial reports.</p>
+        {% endif %}
+        <!-- Add links to clerk/manager functionalities -->
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
