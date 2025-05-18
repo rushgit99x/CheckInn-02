@@ -25,6 +25,15 @@
                         {% endwith %}
                         <form method="POST" action="{{ url_for('auth.customer_register') }}">
                             <div class="form-group">
+                                <label>Registration Type</label>
+                                <div>
+                                    <input type="radio" id="individual" name="registration_type" value="individual" checked>
+                                    <label for="individual">Individual Customer</label>
+                                    <input type="radio" id="travel_company" name="registration_type" value="travel_company">
+                                    <label for="travel_company">Travel Company</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label for="username">Username</label>
                                 <input type="text" class="form-control" id="username" name="username" required>
                             </div>
@@ -35,6 +44,14 @@
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="form-group travel-company-fields" style="display: none;">
+                                <label for="company_name">Company Name</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name">
+                            </div>
+                            <div class="form-group travel-company-fields" style="display: none;">
+                                <label for="contact_number">Contact Number</label>
+                                <input type="text" class="form-control" id="contact_number" name="contact_number">
                             </div>
                             <button type="submit" class="btn btn-success btn-block">Register</button>
                         </form>
@@ -47,5 +64,16 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <script>
+        $(document).ready(function() {
+            $('input[name="registration_type"]').change(function() {
+                if ($('#travel_company').is(':checked')) {
+                    $('.travel-company-fields').show();
+                    $('#company_name').prop('required', true);
+                } else {
+                    $('.travel-company-fields').hide();
+                    $('#company_name').prop('required', false);
+                }
+            });
+        });
+    </script>

@@ -15,7 +15,7 @@ def customer_register():
     with app.app_context():
         if current_user.is_authenticated:
             if current_user.role == UserRole.CUSTOMER:
-                return redirect(url_for('auth.customer_dashboard'))
+                return redirect(url_for('auth.customer_dashboard' if not current_user.is_travel_company else 'auth.travel_company_dashboard'))
             else:
                 return redirect(url_for('auth.staff_dashboard'))
         
@@ -23,6 +23,9 @@ def customer_register():
             username = request.form['username']
             email = request.form['email']
             password = request.form['password']
+            registration_type = request.form['registration_type']
+            company_name = request.form.get('company_name')
+            contact_number = request.form.get('contact_number')
             
             if User.query.filter_by(username=username).first():
                 flash('Username already exists.', 'danger')
@@ -30,11 +33,17 @@ def customer_register():
             if User.query.filter_by(email=email).first():
                 flash('Email already registered.', 'danger')
                 return redirect(url_for('auth.customer_register'))
+            if registration_type == 'travel_company' and not company_name:
+                flash('Company name is required for travel company registration.', 'danger')
+                return redirect(url_for('auth.customer_register'))
             
             user = User(
                 username=username,
                 email=email,
-                role=UserRole.CUSTOMER
+                role=UserRole.CUSTOMER,
+                is_travel_company=(registration_type == 'travel_company'),
+                company_name=company_name if registration_type == 'travel_company' else None,
+                contact_number=contact_number if registration_type == 'travel_company' else None
             )
             user.set_password(password)
             db.session.add(user)
@@ -53,7 +62,7 @@ def staff_register():
             if current_user.role in [UserRole.CLERK, UserRole.MANAGER]:
                 return redirect(url_for('auth.staff_dashboard'))
             else:
-                return redirect(url_for('auth.customer_dashboard'))
+                return redirect(url_for('auth.customer_dashboard' if not current_user.is_travel_company else 'auth.travel_company_dashboard'))
         
         if request.method == 'POST':
             username = request.form['username']
@@ -91,7 +100,7 @@ def customer_login():
     with app.app_context():
         if current_user.is_authenticated:
             if current_user.role == UserRole.CUSTOMER:
-                return redirect(url_for('auth.customer_dashboard'))
+                return redirect(url_for('auth.customer_dashboard' if not current_user.is_travel_company else 'auth.travel_company_dashboard'))
             else:
                 flash('Please use the staff portal.', 'danger')
                 return redirect(url_for('auth.staff_login'))
@@ -107,7 +116,7 @@ def customer_login():
                     return redirect(url_for('auth.staff_login'))
                 login_user(user)
                 flash('Login successful!', 'success')
-                return redirect(url_for('auth.customer_dashboard'))
+                return redirect(url_for('auth.travel_company_dashboard' if user.is_travel_company else 'auth.customer_dashboard'))
             else:
                 flash('Invalid username or password.', 'danger')
         
@@ -159,10 +168,22 @@ def logout():
 def customer_dashboard():
     app = create_app()
     with app.app_context():
-        if current_user.role != UserRole.CUSTOMER:
+        if current_user.role != UserRole.CUSTOMER or current_user.is_travel_company:
             flash('Unauthorized access.', 'danger')
-            return redirect(url_for('auth.staff_login'))
+            return redirect(url_for('auth.travel_company_dashboard' if current_user.is_travel_company else 'auth.staff_login'))
         return render_template('customer_dashboard.html', user_type='Customer')
+
+@auth_bp.route('/customer/travel_company_dashboard')
+@login_required
+def travel_company_dashboard():
+    app = create_app()
+    with app.app_context():
+        if current_user.role != UserRole.CUSTOMER or not current_user.is_travel_company:
+            flash('Unauthorized access.', 'danger')
+            return redirect(url_for('auth.customer_dashboard' if current_user.role == UserRole.CUSTOMER else 'auth.staff_login'))
+        return render_template('travel_company_dashboard.html', 
+                             company_name=current_user.company_name,
+                             contact_number=current_user.contact_number)
 
 @auth_bp.route('/staff/dashboard')
 @login_required
