@@ -93,16 +93,6 @@ html, body {
     background-repeat: no-repeat;
 }
 
-nav {
-    position: fixed;
-    isolation: isolate;
-    top: 0;
-    width: 100%;
-    max-width: var(--max-width);
-    margin: auto;
-    z-index: 9;
-}
-
 .nav__bar {
     padding: 1rem;
     display: flex;
@@ -150,27 +140,48 @@ nav {
 }
 
 .header__container {
-    padding-block: 10rem 15rem;
+    padding-block: 10rem 5rem;
 }
 
-.header__container p {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    color: var(--white);
-    text-align: center;
-    opacity: 0.6;
-}
-
-.header__container h1 {
-    font-size: 4rem;
-    font-weight: 500;
-    line-height: 4.5rem;
-    color: var(--white);
+.hero-section {
+    background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945') no-repeat center center;
+    background-size: cover;
+    color: white;
+    padding: 100px 0;
     text-align: center;
 }
 
-.header__container h1 span {
-    color: var(--primary-color);
+.hero-section h1 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.search-form {
+    background: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.search-form .form-control {
+    margin-bottom: 10px;
+}
+
+.room__container h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+#roomCarousel .carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+#roomCarousel .carousel-caption {
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    border-radius: 5px;
 }
 
 .booking__container {

@@ -321,16 +321,26 @@ def book_room():
     rooms = Room.query.filter_by(status='available').all()
     return render_template('book_room.html', rooms=rooms)
 
+# @auth_bp.route('/customer/reservations')
+# @login_required
+# def customer_reservations():
+#     if current_user.role != 'customer' or current_user.is_travel_company:
+#         flash('Unauthorized access.', 'danger')
+#         return redirect(url_for('auth.travel_company_dashboard' if current_user.is_travel_company else 'auth.staff_login'))
+    
+#     customer = Customer.query.filter_by(user_id=current_user.user_id).first()
+#     reservations = Reservation.query.filter_by(customer_id=customer.customer_id).all()
+#     return render_template('customer_reservations.html', reservations=reservations)
+
 @auth_bp.route('/customer/reservations')
 @login_required
 def customer_reservations():
     if current_user.role != 'customer' or current_user.is_travel_company:
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('auth.travel_company_dashboard' if current_user.is_travel_company else 'auth.staff_login'))
-    
-    customer = Customer.query.filter_by(user_id=current_user.user_id).first()
-    reservations = Reservation.query.filter_by(customer_id=customer.customer_id).all()
+        flash('Access denied.', 'danger')
+        return redirect(url_for('auth.index'))
+    reservations = Reservation.query.filter_by(customer_id=current_user.user_id).all()
     return render_template('customer_reservations.html', reservations=reservations)
+
 
 @auth_bp.route('/customer/cancel_reservation/<int:reservation_id>', methods=['POST'])
 @login_required

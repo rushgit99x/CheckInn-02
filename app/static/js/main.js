@@ -1,4 +1,3 @@
-
 const menuBtn = document.getElementById("menu-btn");
 const navLinks = document.getElementById("nav-links");
 const menuBtnIcon = menuBtn.querySelector("i");
@@ -23,6 +22,7 @@ const scrollRevealOption = {
 // header container
 ScrollReveal().reveal(".header__container p", { ...scrollRevealOption });
 ScrollReveal().reveal(".header__container h1", { ...scrollRevealOption, delay: 500 });
+ScrollReveal().reveal(".search-form", { ...scrollRevealOption, delay: 1000 });
 
 // about container
 ScrollReveal().reveal(".about__image img", { ...scrollRevealOption, origin: "left" });
@@ -33,6 +33,21 @@ ScrollReveal().reveal(".about__btn", { ...scrollRevealOption, delay: 2000 });
 
 // room container
 ScrollReveal().reveal(".room__card", { ...scrollRevealOption, interval: 500 });
+ScrollReveal().reveal("#roomCarousel", { ...scrollRevealOption, delay: 500 });
 
 // service container
 ScrollReveal().reveal(".service__list li", { ...scrollRevealOption, interval: 500, origin: "right" });
+
+$(document).ready(function() {
+    $('#searchForm').on('submit', function(e) {
+        console.log('Search form submitted');
+        console.log('Form data:', $(this).serialize());
+        var checkIn = $('#check_in_date').val();
+        var checkOut = $('#check_out_date').val();
+        var occupants = $('#number_of_occupants').val();
+        if (!checkIn || !checkOut || !occupants) {
+            e.preventDefault();
+            alert('Please fill in all search fields.');
+        }
+    });
+});
