@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Rooms - CheckInn{% endblock %}
+
+{% block content %}
+    <h2>Manage Rooms</h2>
+
+    <h3>Add New Room Type</h3>
+    <form method="POST" action="{{ url_for('auth.manage_rooms') }}" onsubmit="return validateRoomTypeForm()">
+        <div class="form-group">
+            <label for="type_name">Type Name</label>
+            <input type="text" class="form-control" id="type_name" name="type_name" required maxlength="50">
+            <small class="form-text text-muted">Maximum 50 characters.</small>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="base_price">Base Price ($/night)</label>
+            <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="image_url">Image URL</label>
+            <input type="text" class="form-control" id="image_url" name="image_url">
+        </div>
+        <button type="submit" class="btn btn-success">Add Room Type</button>
+    </form>
+
+    <h3>Add New Room</h3>
+    <form method="POST" action="{{ url_for('auth.manage_rooms') }}" onsubmit="return validateRoomForm()">
+        <div class="form-group">
+            <label for="room_number">Room Number</label>
+            <input type="text" class="form-control" id="room_number" name="room_number" required>
+        </div>
+        <div class="form-group">
+            <label for="type_id">Room Type</label>
+            <select class="form-control" id="type_id" name="type_id" required>
+                {% if room_types %}
+                    {% for room_type in room_types %}
+                        <option value="{{ room_type.type_id }}">{{ room_type.type_name }}</option>
+                    {% endfor %}
+                {% else %}
+                    <option value="" disabled selected>No room types available</option>
+                {% endif %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="price_per_night">Price Per Night ($)</label>
+            <input type="number" class="form-control" id="price_per_night" name="price_per_night" step="0.01" min="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="weekly_rate">Weekly Rate ($)</label>
+            <input type="number" class="form-control" id="weekly_rate" name="weekly_rate" step="0.01" min="0">
+        </div>
+        <div class="form-group">
+            <label for="monthly_rate">Monthly Rate ($)</label>
+            <input type="number" class="form-control" id="monthly_rate" name="monthly_rate" step="0.01" min="0">
+        </div>
+        <button type="submit" class="btn btn-success">Add Room</button>
+    </form>
+
+    <h3>Existing Room Types</h3>
+    {% if room_types %}
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Type Name</th>
+                    <th>Description</th>
+                    <th>Base Price</th>
+                    <th>Image URL</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room_type in room_types %}
+                    <tr>
+                        <td>{{ room_type.type_name }}</td>
+                        <td>{{ room_type.description }}</td>
+                        <td>${{ "%.2f" | format(room_type.base_price) }}</td>
+                        <td>{{ room_type.image_url or 'No image' }}</td>
+                        <td>
+                            <form action="{{ url_for('auth.delete_room_type', type_id=room_type.type_id) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete('{{ room_type.type_name }}')">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No room types added yet.</p>
+    {% endif %}
+
+    <h3>Existing Rooms</h3>
+    {% if rooms %}
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Room Number</th>
+                    <th>Room Type</th>
+                    <th>Price Per Night</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                    <tr>
+                        <td>{{ room.room_number }}</td>
+                        <td>{{ room.room_type.type_name if room.room_type else 'N/A' }}</td>
+                        <td>${{ "%.2f" | format(room.price_per_night) }}</td>
+                        <td>{{ room.status.capitalize() }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No rooms added yet.</p>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        function confirmDelete(typeName) {
+            return confirm(`Are you sure you want to delete the room type "${typeName}"? This action cannot be undone.`);
+        }
+
+        function validateRoomTypeForm() {
+            const typeName = document.getElementById('type_name').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const basePrice = parseFloat(document.getElementById('base_price').value);
+
+            if (!typeName) {
+                alert('Room type name cannot be empty.');
+                return false;
+            }
+            if (typeName.length > 50) {
+                alert('Room type name must be 50 characters or less.');
+                return false;
+            }
+            if (!description) {
+                alert('Description cannot be empty.');
+                return false;
+            }
+            if (isNaN(basePrice) || basePrice <= 0) {
+                alert('Base price must be a positive number.');
+                return false;
+            }
+            return true;
+        }
+
+        function validateRoomForm() {
+            const roomNumber = document.getElementById('room_number').value.trim();
+            const pricePerNight = parseFloat(document.getElementById('price_per_night').value);
+
+            if (!roomNumber) {
+                alert('Room number cannot be empty.');
+                return false;
+            }
+            if (isNaN(pricePerNight) || pricePerNight <= 0) {
+                alert('Price per night must be a positive number.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+{% endblock %}

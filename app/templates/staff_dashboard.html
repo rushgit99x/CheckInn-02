@@ -8,20 +8,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">CheckInn Staff</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <a class="navbar-brand text-white" href="#">CheckInn Staff</a>
         <div class="navbar-nav">
-            <a class="nav-item nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+            {% if user_type == 'Clerk' %}
+                <a class="nav-item nav-link text-white" href="{{ url_for('auth.check_in_out') }}">Check In/Out</a>
+                <a class="nav-item nav-link text-white" href="{{ url_for('auth.staff_reservations') }}">Reservations</a>
+            {% elif user_type == 'Manager' %}
+                <a class="nav-item nav-link text-white" href="{{ url_for('auth.occupancy_report') }}">Occupancy Report</a>
+                <a class="nav-item nav-link text-white" href="{{ url_for('auth.financial_summary') }}">Financial Summary</a>
+                <a class="nav-item nav-link text-white" href="{{ url_for('auth.manage_rooms') }}">Manage Rooms</a>
+            {% endif %}
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </nav>
     <div class="container mt-5">
         <h2>Welcome, {{ user_type }}!</h2>
-        {% if user_type == 'Clerk' %}
-            <p>Perform check-in, check-out, or manage reservations.</p>
-        {% elif user_type == 'Manager' %}
-            <p>View occupancy and financial reports.</p>
-        {% endif %}
-        <!-- Add links to clerk/manager functionalities -->
+        <p>Manage hotel operations.</p>
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Operations</h4>
+            </div>
+            <div class="card-body">
+                {% if user_type == 'Clerk' %}
+                    <p>Handle guest check-ins and check-outs or view reservations.</p>
+                    <a href="{{ url_for('auth.check_in_out') }}" class="btn btn-success">Check In/Out</a>
+                    <a href="{{ url_for('auth.staff_reservations') }}" class="btn btn-secondary">View Reservations</a>
+                {% elif user_type == 'Manager' %}
+                    <p>View reports or manage rooms.</p>
+                    <a href="{{ url_for('auth.occupancy_report') }}" class="btn btn-success">Occupancy Report</a>
+                    <a href="{{ url_for('auth.financial_summary') }}" class="btn btn-success">Financial Summary</a>
+                    <a href="{{ url_for('auth.manage_rooms') }}" class="btn btn-secondary">Manage Rooms</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

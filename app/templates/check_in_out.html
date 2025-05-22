@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check In/Out - CheckInn</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-success">
+        <a class="navbar-brand text-white" href="#">CheckInn Staff</a>
+        <div class="navbar-nav">
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.staff_dashboard') }}">Dashboard</a>
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h2>Check In/Out</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Room Number</th>
+                    <th>Check-in Date</th>
+                    <th>Check-out Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td>{{ reservation.customer.name }}</td>
+                        <td>{{ reservation.room.room_number }}</td>
+                        <td>{{ reservation.check_in_date }}</td>
+                        <td>{{ reservation.check_out_date }}</td>
+                        <td>{{ reservation.status.capitalize() }}</td>
+                        <td>
+                            {% if reservation.status == 'confirmed' %}
+                                <form method="POST" action="{{ url_for('auth.check_in_out') }}">
+                                    <input type="hidden" name="reservation_id" value="{{ reservation.reservation_id }}">
+                                    <input type="hidden" name="action" value="check_in">
+                                    <button type="submit" class="btn btn-success btn-sm">Check In</button>
+                                </form>
+                            {% elif reservation.status == 'checked_in' %}
+                                <form method="POST" action="{{ url_for('auth.check_in_out') }}">
+                                    <input type="hidden" name="reservation_id" value="{{ reservation.reservation_id }}">
+                                    <input type="hidden" name="action" value="check_out">
+                                    <button type="submit" class="btn btn-primary btn-sm">Check Out</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

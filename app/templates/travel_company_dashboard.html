@@ -11,20 +11,23 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-success">
         <a class="navbar-brand text-white" href="#">CheckInn Travel</a>
         <div class="navbar-nav">
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.bulk_reservation') }}">Bulk Reservation</a>
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.travel_company_bookings') }}">Booking History</a>
             <a class="nav-item nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </nav>
     <div class="container mt-5">
-        <h2>Welcome, {{ company_name }}!</h2>
+        <h2>Welcome, {{ company.name }}!</h2>
         <p>Manage your travel company's reservations and bookings.</p>
         <div class="card mb-4">
             <div class="card-header">
                 <h4>Company Details</h4>
             </div>
             <div class="card-body">
-                <p><strong>Company Name:</strong> {{ company_name }}</p>
-                {% if contact_number %}
-                    <p><strong>Contact Number:</strong> {{ contact_number }}</p>
+                <p><strong>Company Name:</strong> {{ company.name }}</p>
+                <p><strong>Contact Email:</strong> {{ company.contact_email }}</p>
+                {% if company.billing_details %}
+                    <p><strong>Billing Details:</strong> {{ company.billing_details }}</p>
                 {% endif %}
             </div>
         </div>
@@ -34,8 +37,8 @@
             </div>
             <div class="card-body">
                 <p>Create or manage bulk bookings for your clients.</p>
-                <a href="#" class="btn btn-success">Create Bulk Reservation</a>
-                <a href="#" class="btn btn-secondary">View Booking History</a>
+                <a href="{{ url_for('auth.bulk_reservation') }}" class="btn btn-success">Create Bulk Reservation</a>
+                <a href="{{ url_for('auth.travel_company_bookings') }}" class="btn btn-secondary">View Booking History</a>
             </div>
         </div>
     </div>

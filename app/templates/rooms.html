@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Our Rooms - CheckInn{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .hero-section {
+            background: url('https://images.unsplash.com/photo-1566073771259-6a8506099945') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .filter-form {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .room-card {
+            transition: transform 0.2s;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .room-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .room-card img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="hero-section">
+        <h1>Explore Our Rooms</h1>
+        <p>Discover the perfect room for your stay at CheckInn.</p>
+        <div class="filter-form">
+            <h4>Filter Rooms</h4>
+            <form method="POST" action="{{ url_for('auth.rooms') }}" id="filterForm">
+                <div class="form-row">
+                    <div class="col-md-4 mb-3">
+                        <label for="min_price">Min Price ($/night)</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" min="0" step="0.01" value="{{ request.form.get('min_price', '') }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="max_price">Max Price ($/night)</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" min="0" step="0.01" value="{{ request.form.get('max_price', '') }}">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-success btn-block">Filter Rooms</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <section class="container my-5">
+        <h2 class="text-center mb-4">Available Room Types</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% if room_types %}
+            <div class="row">
+                {% for room_type in room_types %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card room-card">
+                            <img src="{{ room_type.image_url or 'https://images.unsplash.com/photo-1611892440504-42a792e24d32' }}" class="card-img-top" alt="{{ room_type.type_name }} Image">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ room_type.type_name }}</h5>
+                                <p class="card-text">
+                                    <strong>Description:</strong> {{ room_type.description }}<br>
+                                    <strong>Base Price:</strong> ${{ "%.2f" | format(room_type.base_price) }}/night<br>
+                                    <strong>Available Rooms:</strong> {{ room_type.rooms | selectattr('status', 'equalto', 'available') | list | length }}
+                                </p>
+                                <a href="{{ url_for('auth.book_room') }}" class="btn btn-success">Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center">No room types match your criteria or are currently available.</p>
+        {% endif %}
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        $(document).ready(function() {
+            $('#filterForm').on('submit', function(e) {
+                const minPrice = parseFloat($('#min_price').val());
+                const maxPrice = parseFloat($('#max_price').val());
+                if (minPrice && maxPrice && minPrice > maxPrice) {
+                    alert('Minimum price cannot be greater than maximum price.');
+                    e.preventDefault();
+                }
+            });
+
+            $('.room-card').hover(
+                function() {
+                    $(this).css('cursor', 'pointer');
+                },
+                function() {
+                    $(this).css('cursor', 'default');
+                }
+            );
+        });
+    </script>
+{% endblock %}

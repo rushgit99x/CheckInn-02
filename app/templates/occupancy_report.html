@@ -3,30 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard - CheckInn</title>
+    <title>Occupancy Report - CheckInn</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-success">
-        <a class="navbar-brand text-white" href="#">CheckInn</a>
+        <a class="navbar-brand text-white" href="#">CheckInn Staff</a>
         <div class="navbar-nav">
-            <a class="nav-item nav-link text-white" href="{{ url_for('auth.book_room') }}">Book Room</a>
-            <a class="nav-item nav-link text-white" href="{{ url_for('auth.customer_reservations') }}">Reservations</a>
+            <a class="nav-item nav-link text-white" href="{{ url_for('auth.staff_dashboard') }}">Dashboard</a>
             <a class="nav-item nav-link text-white" href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
     </nav>
     <div class="container mt-5">
-        <h2>Welcome, {{ customer.name }}!</h2>
-        <p>Manage your hotel reservations.</p>
-        <div class="card mb-4">
-            <div class="card-header">
-                <h4>Reservation Management</h4>
-            </div>
+        <h2>Occupancy Report</h2>
+        <div class="card">
             <div class="card-body">
-                <p>Book new rooms or view your existing reservations.</p>
-                <a href="{{ url_for('auth.book_room') }}" class="btn btn-success">Book Room</a>
-                <a href="{{ url_for('auth.customer_reservations') }}" class="btn btn-secondary">View Reservations</a>
+                <p><strong>Current Occupancy Rate:</strong> {{ "%.2f" % occupancy_rate }}%</p>
             </div>
         </div>
     </div>

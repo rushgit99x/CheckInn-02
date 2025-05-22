@@ -1,9 +1,10 @@
+/* Custom styles for CheckInn */
 body {
-    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
 }
-.card {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.navbar-success .nav-link:hover {
+    color: #f8f9fa !important;
 }
 .alert {
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
 }
